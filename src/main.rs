@@ -2,26 +2,18 @@
 #[path = "../generated/schema.rs"]
 mod schema;
 
-use kclvm_runner::{exec_program, ExecProgramArgs};
+use kcl_loader::to_instance;
 use schema::Person;
 use std::collections::HashMap;
 
 
 
 
-fn main() {
-    let filename = "./data/schema.k";
+fn main() -> anyhow::Result<()> {
+    let result: HashMap<String, Person> = to_instance(vec!["./data/schema.k".to_string()])?;
 
-    let args = ExecProgramArgs {
-        k_filename_list: vec![filename.to_string()],
-        ..ExecProgramArgs::default()
-    };
+    println!("{:?}", result);
 
-    if let Ok(result) = exec_program(&args, 1) {
-        let content = result.yaml_result;
-        let yaml: HashMap<String, Person> = serde_yaml::from_str(&content).unwrap();
-        println!("{:?}", yaml);
-    }
-
+    Ok(())
 }
 
